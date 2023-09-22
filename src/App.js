@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import MovieDetails from "./Components/MovieDetails";
+import Box from "./Components/Box";
+import MovieList from "./Components/MovieList";
+import WatchedList from "./Components/WatchedList";
+import Summary from "./Components/Summary";
+import Loader from "./Components/Loader";
+import Search from "./Components/Search";
 
 const tempMovieData = [
 	{
@@ -47,11 +53,10 @@ const tempWatchedData = [
 		userRating: 9,
 	},
 ];
-
 const average = arr =>
 	arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-
 export default function App() {
+	const [movie, setMovie] = useState([]);
 	const [movies, setMovies] = useState([]);
 	const [watched, setWatched] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +64,6 @@ export default function App() {
 	const [query, setQuery] = useState("");
 	const [selectedId, setSelectedId] = useState(null);
 
-]
 	function handleSelectMovie(id) {
 		setSelectedId(selectedId === id ? null : id);
 	}
@@ -67,6 +71,8 @@ export default function App() {
 	function handleCloseMovie() {
 		setSelectedId(null);
 	}
+
+	// function handleAddWatch
 
 	useEffect(
 		function () {
@@ -122,7 +128,7 @@ export default function App() {
 				<Box>
 					<>
 						{selectedId ? (
-							<SelectedMovie
+							<MovieDetails
 								selectedId={selectedId}
 								onCloseMovie={handleCloseMovie}
 							/>
@@ -160,133 +166,6 @@ function Logo() {
 	);
 }
 
-function Search({ query, setQuery }) {
-	return (
-		<input
-			className="search"
-			type="text"
-			placeholder="Search movies..."
-			value={query}
-			onChange={e => setQuery(e.target.value)}
-		/>
-	);
-}
-
-function MovieListItem({ movie, onSelectMovie }) {
-	return (
-		<li onClick={() => onSelectMovie(movie.imdbID)}>
-			<img src={movie.Poster} alt={`${movie.Title} poster`} />
-			<h3>{movie.Title}</h3>
-			<div>
-				<p>
-					<span>🗓</span>
-					<span>{movie.Year}</span>
-				</p>
-			</div>
-		</li>
-	);
-}
-
-function MovieList({ movies, onSelectMovie }) {
-	return (
-		<ul className="list list-movies">
-			{movies?.map(movie => (
-				<MovieListItem
-					movie={movie}
-					key={movie.imdbID}
-					onSelectMovie={onSelectMovie}
-				/>
-			))}
-		</ul>
-	);
-}
-
-function Box({ children }) {
-	const [isOpen, setIsOpen] = useState(true);
-
-	return (
-		<div className="box">
-			<button className="btn-toggle" onClick={() => setIsOpen(open => !open)}>
-				{isOpen ? "–" : "+"}
-			</button>
-			{isOpen && children}
-		</div>
-	);
-}
-
-function Summary({ watched }) {
-	const avgImdbRating = average(watched.map(movie => movie.imdbRating));
-	const avgUserRating = average(watched.map(movie => movie.userRating));
-	const avgRuntime = average(watched.map(movie => movie.runtime));
-	return (
-		<div className="summary">
-			<h2>Movies you watched</h2>
-			<div>
-				<p>
-					<span>#️⃣</span>
-					<span>{watched.length} movies</span>
-				</p>
-				<p>
-					<span>⭐️</span>
-					<span>{avgImdbRating}</span>
-				</p>
-				<p>
-					<span>🌟</span>
-					<span>{avgUserRating}</span>
-				</p>
-				<p>
-					<span>⏳</span>
-					<span>{avgRuntime} min</span>
-				</p>
-			</div>
-		</div>
-	);
-}
-
-function WatchedListItem({ movie }) {
-	return (
-		<li key={movie.imdbID}>
-			<img src={movie.Poster} alt={`${movie.Title} poster`} />
-			<h3>{movie.Title}</h3>
-			<div>
-				<p>
-					<span>⭐️</span>
-					<span>{movie.imdbRating}</span>
-				</p>
-				<p>
-					<span>🌟</span>
-					<span>{movie.userRating}</span>
-				</p>
-				<p>
-					<span>⏳</span>
-					<span>{movie.runtime} min</span>
-				</p>
-			</div>
-		</li>
-	);
-}
-
-function WatchedList({ watched }) {
-	return (
-		<ul className="list">
-			{watched.map(movie => (
-				<WatchedListItem movie={movie} key={movie.imdbID} />
-			))}
-		</ul>
-	);
-}
-
-function SelectedMovie({ selectedId, onCloseMovie }) {
-	return (
-		<div className="selected">
-			<button className="btn-back" onClick={onCloseMovie}>
-				<ArrowBackIcon />
-			</button>
-			{selectedId}
-		</div>
-	);
-}
-
 function Main({ children }) {
 	return <main className="main">{children}</main>;
 }
@@ -295,8 +174,4 @@ const KEY = "54c6f104";
 
 function ErrorMessage({ message }) {
 	return <p className="error">{message}</p>;
-}
-
-function Loader() {
-	return <p className="loader">Loading...</p>;
 }
